@@ -574,11 +574,18 @@ module internal InstructionsSet =
         match cilState.opStack with
         | object :: stack ->
             let typ = resolveTermTypeFromMetadata cilState.state cfg (offset + OpCodes.Isinst.Size)
-            let isCast = Types.IsCast cilState.state typ object
-            StatedConditionalExecutionCIL cilState // TODO: StatedConditionalExecutionCIL can be used here, but condition is !(x == 0) && someTypeCondition
-                (fun state k -> k (isCast, state))
-                (fun cilState k -> k [cilState])
-                (fun cilState k -> k [{cilState with opStack = MakeNullRef() :: stack}])
+            let elseCase cilState k = k [{cilState with opStack = MakeNullRef() :: stack}]
+            let canCast = Types.CanCast object typ
+            let noneNullCase cilState k =
+                StatedTypeConditionalExecutionCIL cilState
+                    (fun state k -> k (canCast, state))
+                    (fun cilState k -> k [cilState])
+                    elseCase
+                    id
+            StatedConditionalExecutionCIL cilState // TODO: it is hack for Natasha
+                (fun state k -> k (IsNullReference object, state))
+                elseCase
+                noneNullCase
                 id
         | _ -> __notImplemented__()
     let cgtun (cilState : cilState) =

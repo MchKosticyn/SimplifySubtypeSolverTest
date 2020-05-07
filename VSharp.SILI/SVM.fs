@@ -52,9 +52,10 @@ module public SVM =
             |> FSharp.Collections.Array.iter (fun m -> 
                 match m.GetMethodBody() with
                 | null -> ()
-                | _ -> if m <> ep && not m.IsAbstract then
-                    try explore dictionary m with
-                    | _ -> ())
+                | _ ->
+                    if m <> ep && not m.IsAbstract then
+                        try explore dictionary m with
+                        | _ -> ())
         
     let private replaceLambdaLines str =
         System.Text.RegularExpressions.Regex.Replace(str, @"@\d+(\+|\-)\d*\[Microsoft.FSharp.Core.Unit\]", "")

@@ -102,7 +102,7 @@ module API =
         val RefIsType : term -> termType -> term
         val RefIsRef : term -> term -> term
         val CanCast : term -> termType -> term
-        val IsCast : state -> termType -> term -> term
+//        val IsCast : state -> termType -> term -> term
         val Cast : state -> term -> termType -> bool -> (state -> term -> termType -> term * state) -> (term * state -> 'b) -> 'b
         val CastReferenceToPointer : state -> term -> term
 
